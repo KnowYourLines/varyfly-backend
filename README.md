@@ -19,3 +19,5 @@ To open a terminal on the running app:
 ```
 docker exec -it varyfly-backend-web-1 bash
 ```
+# Deploying on Render
+Go to [Render Blueprints](https://dashboard.render.com/blueprints). Connect a Github account with access to this repo and select this repo when creating a new Blueprint instance.

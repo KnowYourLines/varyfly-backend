@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: varyfly-frontend
+    repo: https://github.com/KnowYourLines/varyfly-frontend.git
+    env: static
+    buildCommand: yarn build
+    staticPublishPath: dist
+    domains:
+      - varyfly.com
+    envVars:
+      - key: VITE_BACKEND_URL
+        fromService:
+          name: varyfly-backend
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+  - type: web
+    name: varyfly-backend
+    env: python
+    repo: https://github.com/KnowYourLines/varyfly-backend.git
+    region: ohio
+    plan: free
+    branch: main
+    buildCommand: "pip install -r requirements.txt; python manage.py makemigrations api; python manage.py migrate; python manage.py collectstatic --no-input"
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT server.wsgi:application"
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: PYTHON_VERSION
+        value: 3.10.8
+      - key: DEBUG
+        value: False
+      - key: LOCAL
+        value: False
+      - key: ALLOWED_HOSTS
+        value: varyfly.com
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://varyfly.com
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: varyfly-db
+          property: connectionString
+      - key: AMADEUS_API_KEY
+        sync: false
+      - key: AMADEUS_API_SECRET
+        sync: false
+      - key: AMADEUS_BASE_URL
+        sync: false
+      - key: DUFFEL_ACCESS_TOKEN
+        sync: false
+
+databases:
+  - name: varyfly-db
+    plan: free
+    region: ohio
+    postgresMajorVersion: 14
+    ipAllowList: [] # only allow internal connections
