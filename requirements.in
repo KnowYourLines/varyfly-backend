@@ -1,0 +1,7 @@
+Django<5
+djangorestframework<4
+psycopg2>=2.8
+dj-database-url
+whitenoise[brotli]
+django-cors-headers
+gunicorn
