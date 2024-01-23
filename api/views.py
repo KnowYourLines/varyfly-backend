@@ -65,7 +65,7 @@ class DirectDestinationsView(APIView):
             if airport["address"]["cityCode"] == city_iata
         ]
         direct_destinations = []
-        added_cities = {city_iata}
+        added_cities = set()
         for airport_iata in airports:
             response = requests.get(
                 f"https://{os.environ.get('AMADEUS_BASE_URL')}/v1/airport/direct-destinations",
@@ -76,7 +76,12 @@ class DirectDestinationsView(APIView):
             )
             destinations = response.json().get("data", [])
             for city in destinations:
-                if city["iataCode"] not in added_cities:
+                irrelevant = (
+                    city.get("metrics", {}).get("relevance", 0) < 1
+                    and city["address"]["countryCode"] == country_iata
+                )
+
+                if city["iataCode"] not in added_cities and not irrelevant:
                     added_cities.add(city["iataCode"])
                     direct_destinations.append(city)
         for destination in direct_destinations:
