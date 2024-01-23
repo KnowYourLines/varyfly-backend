@@ -1,12 +1,13 @@
 import os
 
+from geopy import distance
 import pycountry
 import requests
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.helpers import access_token_and_type
+from api.helpers import access_token_and_type, get_city_details
 
 
 class CitySearchView(APIView):
@@ -44,6 +45,11 @@ class DirectDestinationsView(APIView):
         country_iata = request.query_params.get("country_iata")
         city_iata = request.query_params.get("city_iata")
         token_type, access_token = access_token_and_type()
+        home_city_details = get_city_details(
+            city_iata, country_iata, token_type, access_token
+        )
+        home_latitude = home_city_details["geoCode"]["latitude"]
+        home_longitude = home_city_details["geoCode"]["longitude"]
         response = requests.get(
             f"https://{os.environ.get('AMADEUS_BASE_URL')}/v1/reference-data/locations",
             params={
@@ -73,5 +79,18 @@ class DirectDestinationsView(APIView):
                 if city["iataCode"] not in added_cities:
                     added_cities.add(city["iataCode"])
                     direct_destinations.append(city)
-        print(direct_destinations)
-        return Response()
+        for destination in direct_destinations:
+            destination_latitude = destination["geoCode"]["latitude"]
+            destination_longitude = destination["geoCode"]["longitude"]
+            travel_distance = distance.distance(
+                (home_latitude, home_longitude),
+                (destination_latitude, destination_longitude),
+            )
+            destination["travel_distance_km"] = travel_distance.km
+            destination["travel_distance_miles"] = travel_distance.miles
+            del destination["timeZone"]["referenceLocalDateTime"]
+        direct_destinations = sorted(
+            direct_destinations,
+            key=lambda destination_city: destination_city["travel_distance_km"],
+        )
+        return Response(direct_destinations)
