@@ -5,3 +5,5 @@ dj-database-url
 whitenoise[brotli]
 django-cors-headers
 gunicorn
+requests
+pycountry
