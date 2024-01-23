@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
-    "rest_framework.authtoken",
     "api",
 ]
 
@@ -157,10 +156,4 @@ LOGGING = {
         "handlers": ["console"],
         "level": "INFO",
     },
-}
-
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",  # Add this line
-    ],
 }
