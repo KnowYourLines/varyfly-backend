@@ -8,9 +8,9 @@ from rest_framework.views import APIView
 
 
 class CitySearchView(APIView):
-    def post(self, request):
+    def get(self, request):
         auth_token = os.environ.get("DUFFEL_ACCESS_TOKEN")
-        query = request.data.get("query")
+        query = request.query_params.get("query")
         url = "https://api.duffel.com/places/suggestions"
         headers = {
             "Duffel-Version": "v1",

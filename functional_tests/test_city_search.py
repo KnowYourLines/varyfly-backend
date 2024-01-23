@@ -4,7 +4,7 @@ from django.test import TestCase
 
 class CitySearchTest(TestCase):
     def test_searches_for_cities(self):
-        response = self.client.post("/search/cities/", {"query": "Lond"}, format="json")
+        response = self.client.get("/search/cities/?query=Lond", format="json")
         assert response.status_code == HTTPStatus.OK
         assert response.data == [
             {
