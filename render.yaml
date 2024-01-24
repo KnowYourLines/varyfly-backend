@@ -4,11 +4,11 @@ services:
     repo: https://github.com/KnowYourLines/varyfly-frontend.git
     env: static
     buildCommand: yarn build
-    staticPublishPath: dist
+    staticPublishPath: build
     domains:
       - varyfly.com
     envVars:
-      - key: VITE_BACKEND_URL
+      - key: REACT_APP_BACKEND_URL
         fromService:
           name: varyfly-backend
           type: web
