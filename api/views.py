@@ -91,11 +91,15 @@ class DirectDestinationsView(APIView):
                 (home_latitude, home_longitude),
                 (destination_latitude, destination_longitude),
             )
-            destination["travel_distance_km"] = travel_distance.km
-            destination["travel_distance_miles"] = travel_distance.miles
+            estimated_flight_time = travel_distance.miles / 575 + (5 / 6)
+            destination["estimated_flight_time"] = estimated_flight_time
+            destination["estimated_flight_time_hrs"] = int(estimated_flight_time // 1)
+            destination["estimated_flight_time_mins"] = int(
+                estimated_flight_time % 1 * 60
+            )
             del destination["timeZone"]["referenceLocalDateTime"]
         direct_destinations = sorted(
             direct_destinations,
-            key=lambda destination_city: destination_city["travel_distance_km"],
+            key=lambda destination_city: destination_city["estimated_flight_time"],
         )
         return Response(direct_destinations)

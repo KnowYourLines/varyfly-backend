@@ -11,8 +11,9 @@ class DirectDestinationsTest(TestCase):
         assert response.status_code == HTTPStatus.OK
         assert response.data == sorted(
             response.data,
-            key=lambda destination_city: destination_city["travel_distance_km"],
+            key=lambda destination_city: destination_city["estimated_flight_time"],
         )
+        print(response.data[-1])
         assert response.data[0] == {
             "type": "location",
             "subtype": "city",
@@ -26,8 +27,9 @@ class DirectDestinationsTest(TestCase):
             },
             "timeZone": {"offSet": "+00:00"},
             "metrics": {"relevance": 4},
-            "travel_distance_km": 251.1967389376186,
-            "travel_distance_miles": 156.08641715979837,
+            "estimated_flight_time": 1.1047879718721132,
+            "estimated_flight_time_hrs": 1,
+            "estimated_flight_time_mins": 6,
         }
         assert response.data[-1] == {
             "type": "location",
@@ -43,6 +45,7 @@ class DirectDestinationsTest(TestCase):
             },
             "timeZone": {"offSet": "+08:00"},
             "metrics": {"relevance": 13},
-            "travel_distance_km": 14478.856834255264,
-            "travel_distance_miles": 8996.744533334864,
+            "estimated_flight_time": 16.479845565220053,
+            "estimated_flight_time_hrs": 16,
+            "estimated_flight_time_mins": 28,
         }
