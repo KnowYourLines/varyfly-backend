@@ -77,7 +77,7 @@ class DirectDestinationsView(APIView):
             destinations = response.json().get("data", [])
             for city in destinations:
                 irrelevant = (
-                    city.get("metrics", {}).get("relevance", 0) < 1
+                    city.get("metrics", {}).get("relevance", 0) == 0
                     and city["address"]["countryCode"] == country_iata
                 )
 
