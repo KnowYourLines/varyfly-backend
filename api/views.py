@@ -91,7 +91,11 @@ class DirectDestinationsView(APIView):
                 (home_latitude, home_longitude),
                 (destination_latitude, destination_longitude),
             )
-            estimated_flight_time = travel_distance.miles / 575 + (5 / 6)
+            estimated_flight_speed_mph = 575
+            takeoff_landing_hrs = 5 / 6
+            estimated_flight_time = (
+                travel_distance.miles / estimated_flight_speed_mph + takeoff_landing_hrs
+            )
             destination["estimated_flight_time"] = estimated_flight_time
             destination["estimated_flight_time_hrs"] = int(estimated_flight_time // 1)
             destination["estimated_flight_time_mins"] = int(
