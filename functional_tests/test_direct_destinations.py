@@ -13,7 +13,6 @@ class DirectDestinationsTest(TestCase):
             response.data,
             key=lambda destination_city: destination_city["estimated_flight_time"],
         )
-        print(response.data[-1])
         assert response.data[0] == {
             "type": "location",
             "subtype": "city",

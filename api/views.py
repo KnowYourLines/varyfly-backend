@@ -12,29 +12,29 @@ from api.helpers import access_token_and_type, get_city_details
 
 class CitySearchView(APIView):
     def get(self, request):
-        auth_token = os.environ.get("DUFFEL_ACCESS_TOKEN")
         query = request.query_params.get("query")
-        url = "https://api.duffel.com/places/suggestions"
-        headers = {
-            "Duffel-Version": "v1",
-            "Authorization": f"Bearer {auth_token}",
-            "Accept": "application/json",
-            "Accept-Encoding": "gzip",
-        }
-        params = {"name": query}
-        response = requests.get(url, headers=headers, params=params)
-        suggestions = response.json()["data"]
+        token_type, access_token = access_token_and_type()
+        response = requests.get(
+            f"https://{os.environ.get('AMADEUS_BASE_URL')}/v1/reference-data/locations",
+            params={
+                "subType": "CITY",
+                "keyword": query,
+                "sort": "analytics.travelers.score",
+                "view": "FULL",
+            },
+            headers={"Authorization": f"{token_type} {access_token}"},
+        )
         city_suggestions = [
             {
-                "city_iata": suggestion["iata_city_code"],
-                "city_name": suggestion["name"],
-                "country_iata": suggestion["iata_country_code"],
+                "city_iata": city["iataCode"],
+                "city_name": city["name"].title(),
+                "country_iata": city["address"]["countryCode"],
                 "country_name": pycountry.countries.get(
-                    alpha_2=suggestion["iata_country_code"]
+                    alpha_2=city["address"]["countryCode"]
                 ).name,
+                "state_code": city["address"].get("stateCode"),
             }
-            for suggestion in suggestions
-            if suggestion.get("type") == "city"
+            for city in response.json().get("data", [])
         ]
         return Response(city_suggestions)
 
