@@ -96,14 +96,16 @@ class DirectDestinationsView(APIView):
             estimated_flight_time = (
                 travel_distance.miles / estimated_flight_speed_mph + takeoff_landing_hrs
             )
-            destination["estimated_flight_time"] = estimated_flight_time
-            destination["estimated_flight_time_hrs"] = int(estimated_flight_time // 1)
-            destination["estimated_flight_time_mins"] = int(
-                estimated_flight_time % 1 * 60
-            )
+            destination["estimated_flight_time_hrs"] = estimated_flight_time
+            destination[
+                "estimated_flight_time_hrs_mins"
+            ] = f"{int(estimated_flight_time // 1)}h {int(estimated_flight_time % 1 * 60)}m"
+            destination["name"] = destination["name"].title()
+            destination["state"] = destination["address"].get("stateCode")
+            destination["country"] = destination["address"]["countryName"].title()
             del destination["timeZone"]["referenceLocalDateTime"]
         direct_destinations = sorted(
             direct_destinations,
-            key=lambda destination_city: destination_city["estimated_flight_time"],
+            key=lambda destination_city: destination_city["estimated_flight_time_hrs"],
         )
         return Response(direct_destinations)

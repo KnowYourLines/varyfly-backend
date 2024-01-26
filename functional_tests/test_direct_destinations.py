@@ -11,12 +11,12 @@ class DirectDestinationsTest(TestCase):
         assert response.status_code == HTTPStatus.OK
         assert response.data == sorted(
             response.data,
-            key=lambda destination_city: destination_city["estimated_flight_time"],
+            key=lambda destination_city: destination_city["estimated_flight_time_hrs"],
         )
         assert response.data[0] == {
             "type": "location",
             "subtype": "city",
-            "name": "MANCHESTER",
+            "name": "Manchester",
             "iataCode": "MAN",
             "geoCode": {"latitude": 53.35362, "longitude": -2.275},
             "address": {
@@ -26,14 +26,15 @@ class DirectDestinationsTest(TestCase):
             },
             "timeZone": {"offSet": "+00:00"},
             "metrics": {"relevance": 4},
-            "estimated_flight_time": 1.1047879718721132,
-            "estimated_flight_time_hrs": 1,
-            "estimated_flight_time_mins": 6,
+            "estimated_flight_time_hrs": 1.1047879718721132,
+            "estimated_flight_time_hrs_mins": "1h 6m",
+            "state": None,
+            "country": "United Kingdom",
         }
         assert response.data[-1] == {
             "type": "location",
             "subtype": "city",
-            "name": "PERTH",
+            "name": "Perth",
             "iataCode": "PER",
             "geoCode": {"latitude": -31.94027, "longitude": 115.967},
             "address": {
@@ -44,7 +45,8 @@ class DirectDestinationsTest(TestCase):
             },
             "timeZone": {"offSet": "+08:00"},
             "metrics": {"relevance": 13},
-            "estimated_flight_time": 16.479845565220053,
-            "estimated_flight_time_hrs": 16,
-            "estimated_flight_time_mins": 28,
+            "estimated_flight_time_hrs": 16.479845565220053,
+            "estimated_flight_time_hrs_mins": "16h 28m",
+            "state": "WA",
+            "country": "Australia",
         }
