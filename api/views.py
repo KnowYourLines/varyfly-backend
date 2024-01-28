@@ -52,7 +52,12 @@ class DirectDestinationsView(APIView):
         origin_city_iata = request.query_params.get("origin_city_iata")
         token_type, access_token = access_token_and_type()
         origin_direct_destinations = []
-        if origin_city_iata and origin_city_name and origin_country_iata:
+        if (
+            origin_city_iata
+            and origin_city_name
+            and origin_country_iata
+            and len(origin_country_iata) == 2
+        ):
             origin_direct_destinations = get_direct_destinations(
                 origin_city_iata,
                 origin_city_name,
@@ -73,7 +78,12 @@ class DirectDestinationsView(APIView):
         destination_country_iata = request.query_params.get("destination_country_iata")
         destination_city_iata = request.query_params.get("destination_city_iata")
         destination_direct_destinations = []
-        if destination_city_iata and destination_city_name and destination_country_iata:
+        if (
+            destination_city_iata
+            and destination_city_name
+            and destination_country_iata
+            and len(destination_country_iata) == 2
+        ):
             destination_direct_destinations = get_direct_destinations(
                 destination_city_iata,
                 destination_city_name,
