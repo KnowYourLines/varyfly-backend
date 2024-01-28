@@ -74,9 +74,12 @@ class DirectDestinationsView(APIView):
             )
         if destination_direct_destinations and origin_direct_destinations:
             direct_destinations = [
-                destination
-                for destination in origin_direct_destinations
-                if destination in destination_direct_destinations
+                origin_destination
+                for origin_destination in origin_direct_destinations
+                if any(
+                    destination["iataCode"] == origin_destination["iataCode"]
+                    for destination in destination_direct_destinations
+                )
             ]
         else:
             direct_destinations = (
