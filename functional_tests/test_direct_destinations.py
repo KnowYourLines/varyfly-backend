@@ -77,7 +77,9 @@ class DirectDestinationsTest(TestCase):
         assert response.status_code == HTTPStatus.OK
         assert response.data == sorted(
             response.data,
-            key=lambda destination_city: destination_city["estimated_flight_time_hrs"],
+            key=lambda destination_city: destination_city[
+                "destination_estimated_flight_time_hrs"
+            ],
         )
         assert response.data[0] == {
             "type": "location",
@@ -92,8 +94,10 @@ class DirectDestinationsTest(TestCase):
             },
             "timeZone": {"offSet": "+00:00"},
             "metrics": {"relevance": 4},
-            "estimated_flight_time_hrs": 1.1047879718721132,
-            "estimated_flight_time_hrs_mins": "1h 6m",
+            "destination_estimated_flight_time_hrs": 1.1047879718721132,
+            "destination_estimated_flight_time_hrs_mins": "1h 6m",
+            "origin_estimated_flight_time_hrs": None,
+            "origin_estimated_flight_time_hrs_mins": None,
             "state": None,
             "country": "United Kingdom",
         }
@@ -111,8 +115,10 @@ class DirectDestinationsTest(TestCase):
             },
             "timeZone": {"offSet": "+08:00"},
             "metrics": {"relevance": 13},
-            "estimated_flight_time_hrs": 16.479845565220053,
-            "estimated_flight_time_hrs_mins": "16h 28m",
+            "destination_estimated_flight_time_hrs": 16.479845565220053,
+            "destination_estimated_flight_time_hrs_mins": "16h 28m",
+            "origin_estimated_flight_time_hrs": None,
+            "origin_estimated_flight_time_hrs_mins": None,
             "state": "WA",
             "country": "Australia",
         }
@@ -125,6 +131,12 @@ class DirectDestinationsTest(TestCase):
         )
         assert response.status_code == HTTPStatus.OK
         assert len(response.data) == 121
+        assert response.data == sorted(
+            response.data,
+            key=lambda destination_city: destination_city[
+                "origin_estimated_flight_time_hrs"
+            ],
+        )
         assert response.data[0] == {
             "type": "location",
             "subtype": "city",

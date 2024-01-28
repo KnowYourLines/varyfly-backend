@@ -72,6 +72,15 @@ class DirectDestinationsView(APIView):
                 token_type,
                 access_token,
             )
+            for destination in destination_direct_destinations:
+                destination[f"destination_estimated_flight_time_hrs"] = destination.pop(
+                    "estimated_flight_time_hrs"
+                )
+                destination[
+                    f"destination_estimated_flight_time_hrs_mins"
+                ] = destination.pop("estimated_flight_time_hrs_mins")
+                destination[f"origin_estimated_flight_time_hrs"] = None
+                destination[f"origin_estimated_flight_time_hrs_mins"] = None
         if destination_direct_destinations and origin_direct_destinations:
             direct_destinations = []
             for origin_destination in origin_direct_destinations:
@@ -88,18 +97,18 @@ class DirectDestinationsView(APIView):
                 if common_destination:
                     destination_direct_destinations.pop(common_destination_index)
                     common_destination[
-                        f"destination_estimated_flight_time_hrs"
-                    ] = common_destination.pop("estimated_flight_time_hrs")
-                    common_destination[
-                        f"destination_estimated_flight_time_hrs_mins"
-                    ] = common_destination.pop("estimated_flight_time_hrs_mins")
-                    common_destination[
                         f"origin_estimated_flight_time_hrs"
                     ] = origin_destination["estimated_flight_time_hrs"]
                     common_destination[
                         f"origin_estimated_flight_time_hrs_mins"
                     ] = origin_destination["estimated_flight_time_hrs_mins"]
                     direct_destinations.append(common_destination)
+                    direct_destinations = sorted(
+                        direct_destinations,
+                        key=lambda destination_city: destination_city[
+                            "origin_estimated_flight_time_hrs"
+                        ],
+                    )
 
         else:
             direct_destinations = (
