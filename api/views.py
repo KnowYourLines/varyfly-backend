@@ -60,6 +60,15 @@ class DirectDestinationsView(APIView):
                 token_type,
                 access_token,
             )
+            for destination in origin_direct_destinations:
+                destination["origin_estimated_flight_time_hrs"] = destination.pop(
+                    "estimated_flight_time_hrs"
+                )
+                destination["origin_estimated_flight_time_hrs_mins"] = destination.pop(
+                    "estimated_flight_time_hrs_mins"
+                )
+                destination["destination_estimated_flight_time_hrs"] = None
+                destination["destination_estimated_flight_time_hrs_mins"] = None
         destination_city_name = request.query_params.get("destination_city_name")
         destination_country_iata = request.query_params.get("destination_country_iata")
         destination_city_iata = request.query_params.get("destination_city_iata")
@@ -73,14 +82,14 @@ class DirectDestinationsView(APIView):
                 access_token,
             )
             for destination in destination_direct_destinations:
-                destination[f"destination_estimated_flight_time_hrs"] = destination.pop(
+                destination["destination_estimated_flight_time_hrs"] = destination.pop(
                     "estimated_flight_time_hrs"
                 )
                 destination[
-                    f"destination_estimated_flight_time_hrs_mins"
+                    "destination_estimated_flight_time_hrs_mins"
                 ] = destination.pop("estimated_flight_time_hrs_mins")
-                destination[f"origin_estimated_flight_time_hrs"] = None
-                destination[f"origin_estimated_flight_time_hrs_mins"] = None
+                destination["origin_estimated_flight_time_hrs"] = None
+                destination["origin_estimated_flight_time_hrs_mins"] = None
         if destination_direct_destinations and origin_direct_destinations:
             direct_destinations = []
             for origin_destination in origin_direct_destinations:
@@ -97,18 +106,18 @@ class DirectDestinationsView(APIView):
                 if common_destination:
                     destination_direct_destinations.pop(common_destination_index)
                     common_destination[
-                        f"origin_estimated_flight_time_hrs"
-                    ] = origin_destination["estimated_flight_time_hrs"]
+                        "origin_estimated_flight_time_hrs"
+                    ] = origin_destination["origin_estimated_flight_time_hrs"]
                     common_destination[
-                        f"origin_estimated_flight_time_hrs_mins"
-                    ] = origin_destination["estimated_flight_time_hrs_mins"]
+                        "origin_estimated_flight_time_hrs_mins"
+                    ] = origin_destination["origin_estimated_flight_time_hrs_mins"]
                     direct_destinations.append(common_destination)
-                    direct_destinations = sorted(
-                        direct_destinations,
-                        key=lambda destination_city: destination_city[
-                            "origin_estimated_flight_time_hrs"
-                        ],
-                    )
+            direct_destinations = sorted(
+                direct_destinations,
+                key=lambda destination_city: destination_city[
+                    "origin_estimated_flight_time_hrs"
+                ],
+            )
 
         else:
             direct_destinations = (
