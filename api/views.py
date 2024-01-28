@@ -73,14 +73,34 @@ class DirectDestinationsView(APIView):
                 access_token,
             )
         if destination_direct_destinations and origin_direct_destinations:
-            direct_destinations = [
-                origin_destination
-                for origin_destination in origin_direct_destinations
-                if any(
-                    destination["iataCode"] == origin_destination["iataCode"]
-                    for destination in destination_direct_destinations
+            direct_destinations = []
+            for origin_destination in origin_direct_destinations:
+                common_destination_index, common_destination = next(
+                    (
+                        (index, destination)
+                        for index, destination in enumerate(
+                            destination_direct_destinations
+                        )
+                        if destination["iataCode"] == origin_destination["iataCode"]
+                    ),
+                    (None, None),
                 )
-            ]
+                if common_destination:
+                    destination_direct_destinations.pop(common_destination_index)
+                    common_destination[
+                        f"destination_estimated_flight_time_hrs"
+                    ] = common_destination.pop("estimated_flight_time_hrs")
+                    common_destination[
+                        f"destination_estimated_flight_time_hrs_mins"
+                    ] = common_destination.pop("estimated_flight_time_hrs_mins")
+                    common_destination[
+                        f"origin_estimated_flight_time_hrs"
+                    ] = origin_destination["estimated_flight_time_hrs"]
+                    common_destination[
+                        f"origin_estimated_flight_time_hrs_mins"
+                    ] = origin_destination["estimated_flight_time_hrs_mins"]
+                    direct_destinations.append(common_destination)
+
         else:
             direct_destinations = (
                 origin_direct_destinations or destination_direct_destinations

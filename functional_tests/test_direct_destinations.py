@@ -138,13 +138,14 @@ class DirectDestinationsTest(TestCase):
                 "regionCode": "NAMER",
             },
             "timeZone": {"offSet": "-05:00"},
-            "metrics": {"relevance": 7},
-            "estimated_flight_time_hrs": 1.1677705881354619,
-            "estimated_flight_time_hrs_mins": "1h 10m",
+            "metrics": {"relevance": 26},
             "state": "MA",
             "country": "United States Of America",
+            "destination_estimated_flight_time_hrs": 6.532059143908586,
+            "destination_estimated_flight_time_hrs_mins": "6h 31m",
+            "origin_estimated_flight_time_hrs": 1.1677705881354619,
+            "origin_estimated_flight_time_hrs_mins": "1h 10m",
         }
-
         assert response.data[-1] == {
             "type": "location",
             "subtype": "city",
@@ -157,9 +158,11 @@ class DirectDestinationsTest(TestCase):
                 "regionCode": "SEASI",
             },
             "timeZone": {"offSet": "+08:00"},
-            "metrics": {"relevance": 5},
-            "estimated_flight_time_hrs": 17.41197832473083,
-            "estimated_flight_time_hrs_mins": "17h 24m",
+            "metrics": {"relevance": 37},
             "state": None,
             "country": "Singapore",
+            "destination_estimated_flight_time_hrs": 12.57693622990517,
+            "destination_estimated_flight_time_hrs_mins": "12h 34m",
+            "origin_estimated_flight_time_hrs": 17.41197832473083,
+            "origin_estimated_flight_time_hrs_mins": "17h 24m",
         }
