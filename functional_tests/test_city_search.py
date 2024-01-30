@@ -30,6 +30,21 @@ class CitySearchTest(TestCase):
             },
         ]
 
+    def test_searches_for_cities_by_country(self):
+        response = self.client.get(
+            "/search-cities/?query=Dubl&country_iata=IE", format="json"
+        )
+        assert response.status_code == HTTPStatus.OK
+        assert response.data == [
+            {
+                "city_iata": "DUB",
+                "city_name": "Dublin",
+                "country_iata": "IE",
+                "country_name": "Ireland",
+                "state_code": None,
+            }
+        ]
+
     def test_removes_duplicate_casablanca(self):
         response = self.client.get("/search-cities/?query=Casabl", format="json")
         assert response.status_code == HTTPStatus.OK
