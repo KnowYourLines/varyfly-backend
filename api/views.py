@@ -26,6 +26,8 @@ class CitySearchView(APIView):
                 headers={"Authorization": f"{token_type} {access_token}"},
             )
             response.raise_for_status()
+            cities = response.json().get("data", [])
+            invalid_city_iatas = {"CAS"}
             city_suggestions = [
                 {
                     "city_iata": city["iataCode"],
@@ -36,7 +38,8 @@ class CitySearchView(APIView):
                     ).name,
                     "state_code": city["address"].get("stateCode"),
                 }
-                for city in response.json().get("data", [])
+                for city in cities
+                if city["iataCode"] not in invalid_city_iatas
             ]
             return Response(city_suggestions)
         except requests.HTTPError as exc:

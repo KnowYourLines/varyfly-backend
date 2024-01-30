@@ -29,3 +29,16 @@ class CitySearchTest(TestCase):
                 "state_code": "VA",
             },
         ]
+
+    def test_removes_duplicate_cities(self):
+        response = self.client.get("/search-cities/?query=Casabl", format="json")
+        assert response.status_code == HTTPStatus.OK
+        assert response.data == [
+            {
+                "city_iata": "CMN",
+                "city_name": "Casablanca",
+                "country_iata": "MA",
+                "country_name": "Morocco",
+                "state_code": None,
+            },
+        ]
