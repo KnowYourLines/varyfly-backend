@@ -34,7 +34,7 @@ class BookingLinkView(APIView):
                     "primary_color": "#000000",
                     "markup_rate": "0.01",
                     "markup_currency": "GBP",
-                    "markup_amount": "1.00",
+                    "markup_amount": "2.25",
                     "logo_url": "",
                     "failure_url": "https://varyfly.com/",
                     "checkout_display_text": "Thank you for booking with us.",
