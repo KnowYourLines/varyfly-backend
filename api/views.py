@@ -1,5 +1,7 @@
+import json
 import logging
 import os
+import uuid
 
 import pycountry
 import requests
@@ -8,6 +10,45 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.helpers import access_token_and_type, get_direct_destinations
+
+
+class BookingLinkView(APIView):
+    def get(self, request):
+        try:
+            auth_token = os.environ.get("DUFFEL_ACCESS_TOKEN")
+            url = "https://api.duffel.com/links/sessions"
+            headers = {
+                "Duffel-Version": "v1",
+                "Authorization": f"Bearer {auth_token}",
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Accept-Encoding": "gzip",
+            }
+            payload = {
+                "data": {
+                    "traveller_currency": "GBP",
+                    "success_url": "https://varyfly.com/",
+                    "should_hide_traveller_currency_selector": "false",
+                    "secondary_color": "#000000",
+                    "reference": str(uuid.uuid4()),
+                    "primary_color": "#000000",
+                    "markup_rate": "0.01",
+                    "markup_currency": "GBP",
+                    "markup_amount": "1.00",
+                    "logo_url": "",
+                    "failure_url": "https://varyfly.com/",
+                    "checkout_display_text": "Thank you for booking with us.",
+                    "abandonment_url": "https://varyfly.com/",
+                }
+            }
+            response = requests.post(url, headers=headers, data=json.dumps(payload))
+            response.raise_for_status()
+            response = response.json()["data"]
+            return Response(response)
+        except requests.HTTPError as exc:
+            logging.error(
+                f"Error response {exc.response.status_code} while requesting {exc.request.url}: {exc.response.text}"
+            )
 
 
 class CitySearchView(APIView):
