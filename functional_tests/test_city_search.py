@@ -30,7 +30,7 @@ class CitySearchTest(TestCase):
             },
         ]
 
-    def test_removes_duplicate_cities(self):
+    def test_removes_duplicate_casablanca(self):
         response = self.client.get("/search-cities/?query=Casabl", format="json")
         assert response.status_code == HTTPStatus.OK
         assert response.data == [
