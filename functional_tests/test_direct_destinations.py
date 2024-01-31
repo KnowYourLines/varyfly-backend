@@ -9,46 +9,51 @@ class DirectDestinationsTest(TestCase):
             format="json",
         )
         assert response.status_code == HTTPStatus.OK
+        assert len(response.data) == 367
         assert response.data == sorted(
             response.data,
-            key=lambda destination_city: destination_city["estimated_flight_time_hrs"],
+            key=lambda destination_city: (
+                -destination_city["metrics"]["relevance"],
+                destination_city["estimated_flight_time_hrs"],
+            ),
         )
         assert response.data[0] == {
             "type": "location",
             "subtype": "city",
-            "name": "Manchester",
-            "iataCode": "MAN",
-            "geoCode": {"latitude": 53.35362, "longitude": -2.275},
+            "name": "New York",
+            "iataCode": "NYC",
+            "geoCode": {"latitude": 40.71417, "longitude": -74.00583},
             "address": {
-                "countryName": "UNITED KINGDOM",
-                "countryCode": "GB",
-                "regionCode": "EUROP",
+                "countryName": "UNITED STATES OF AMERICA",
+                "countryCode": "US",
+                "stateCode": "NY",
+                "regionCode": "NAMER",
             },
-            "timeZone": {"offSet": "+00:00"},
-            "metrics": {"relevance": 4},
-            "estimated_flight_time_hrs": 1.1047879718721132,
-            "estimated_flight_time_hrs_mins": "1h 6m",
-            "state": None,
-            "country": "United Kingdom",
+            "timeZone": {"offSet": "-05:00"},
+            "metrics": {"relevance": 100},
+            "estimated_flight_time_hrs": 6.866388995181392,
+            "estimated_flight_time_hrs_mins": "6h 51m",
+            "state": "NY",
+            "country": "United States Of America",
         }
+        print(response.data[-1])
         assert response.data[-1] == {
             "type": "location",
             "subtype": "city",
-            "name": "Perth",
-            "iataCode": "PER",
-            "geoCode": {"latitude": -31.94027, "longitude": 115.967},
+            "name": "Shenzhen",
+            "iataCode": "SZX",
+            "geoCode": {"latitude": 22.63917, "longitude": 113.8106},
             "address": {
-                "countryName": "AUSTRALIA",
-                "countryCode": "AU",
-                "stateCode": "WA",
-                "regionCode": "AUSTL",
+                "countryName": "CHINA",
+                "countryCode": "CN",
+                "regionCode": "ASIA",
             },
             "timeZone": {"offSet": "+08:00"},
-            "metrics": {"relevance": 13},
-            "estimated_flight_time_hrs": 16.479845565220053,
-            "estimated_flight_time_hrs_mins": "16h 28m",
-            "state": "WA",
-            "country": "Australia",
+            "metrics": {"relevance": 0},
+            "estimated_flight_time_hrs": 11.19921362967568,
+            "estimated_flight_time_hrs_mins": "11h 11m",
+            "state": None,
+            "country": "China",
         }
 
     def test_no_data_for_missing_params(self):

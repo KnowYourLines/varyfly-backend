@@ -93,8 +93,10 @@ def get_direct_destinations(
             response.raise_for_status()
             destinations = response.json().get("data", [])
             for city in destinations:
+                city_relevance = city.get("metrics", {}).get("relevance", 0)
+                city["metrics"] = {"relevance": city_relevance}
                 irrelevant = (
-                    city.get("metrics", {}).get("relevance", 0) == 0
+                    city_relevance == 0
                     and city["address"]["countryCode"] == country_iata
                 )
 
@@ -123,7 +125,10 @@ def get_direct_destinations(
             del destination["timeZone"]["referenceLocalDateTime"]
         direct_destinations = sorted(
             direct_destinations,
-            key=lambda destination_city: destination_city["estimated_flight_time_hrs"],
+            key=lambda destination_city: (
+                -destination_city["metrics"]["relevance"],
+                destination_city["estimated_flight_time_hrs"],
+            ),
         )
         return direct_destinations
     except requests.HTTPError as exc:
