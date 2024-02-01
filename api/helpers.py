@@ -80,8 +80,7 @@ def get_direct_destinations(
             for airport in response.json().get("data", [])
             if airport["address"]["cityCode"] == city_iata
         ]
-        direct_destinations = []
-        added_cities = set()
+        direct_destinations = {}
         for airport_iata in airports:
             response = requests.get(
                 f"https://{os.environ.get('AMADEUS_BASE_URL')}/v1/airport/direct-destinations",
@@ -100,9 +99,16 @@ def get_direct_destinations(
                     and city["address"]["countryCode"] == country_iata
                 )
 
-                if city["iataCode"] not in added_cities and not irrelevant:
-                    added_cities.add(city["iataCode"])
-                    direct_destinations.append(city)
+                if city["iataCode"] not in direct_destinations and not irrelevant:
+                    direct_destinations[city["iataCode"]] = city
+                elif (
+                    direct_destinations.get(city["iataCode"], {})
+                    .get("metrics", {})
+                    .get("relevance", 0)
+                    < city_relevance
+                ):
+                    direct_destinations[city["iataCode"]] = city
+        direct_destinations = list(direct_destinations.values())
         for destination in direct_destinations:
             destination_latitude = destination["geoCode"]["latitude"]
             destination_longitude = destination["geoCode"]["longitude"]
