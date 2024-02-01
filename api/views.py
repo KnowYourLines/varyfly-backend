@@ -12,6 +12,12 @@ from rest_framework.views import APIView
 from api.helpers import access_token_and_type, get_direct_destinations
 
 
+class WebhooksView(APIView):
+    def post(self, request):
+        print(request.data)
+        return Response({})
+
+
 class BookingLinkView(APIView):
     def get(self, request):
         try:
