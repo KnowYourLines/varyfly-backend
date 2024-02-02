@@ -103,6 +103,9 @@ class WebhooksTest(TestCase):
             content_type="application/json",
         )
         assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert (
+            response.data["idempotency_key"][0] == "Duplicate webhook request received."
+        )
         response = self.client.post(
             "/webhooks/",
             data={

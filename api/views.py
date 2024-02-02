@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import os
@@ -16,7 +17,9 @@ from api.serializers import OrderCreatedSerializer
 
 class WebhooksView(APIView):
     def post(self, request):
-        serializer = OrderCreatedSerializer(data=request.data)
+        serializer = OrderCreatedSerializer(
+            data=request.data, context={"now": datetime.datetime.now()}
+        )
         if serializer.is_valid(raise_exception=True):
             order_id = serializer.validated_data["data"]["object"]["id"]
             try:
