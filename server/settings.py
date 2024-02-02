@@ -157,3 +157,10 @@ LOGGING = {
         "level": "INFO",
     },
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "varyfly_cache",
+    }
+}

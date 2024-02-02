@@ -17,7 +17,7 @@ from api.serializers import OrderCreatedSerializer
 class WebhooksView(APIView):
     def post(self, request):
         serializer = OrderCreatedSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             order_id = serializer.validated_data["data"]["object"]["id"]
             try:
                 auth_token = os.environ.get("DUFFEL_ACCESS_TOKEN")
@@ -41,7 +41,6 @@ class WebhooksView(APIView):
                     {"request_url": exc.request.url, "message": exc.response.text},
                     status=exc.response.status_code,
                 )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class BookingLinkView(APIView):
