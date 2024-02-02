@@ -5,17 +5,43 @@ import uuid
 
 import pycountry
 import requests
+from rest_framework import status
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.helpers import access_token_and_type, get_direct_destinations
+from api.serializers import OrderCreatedSerializer
 
 
 class WebhooksView(APIView):
     def post(self, request):
-        print(request.data)
-        return Response({})
+        serializer = OrderCreatedSerializer(data=request.data)
+        if serializer.is_valid():
+            order_id = serializer.validated_data["data"]["object"]["id"]
+            try:
+                auth_token = os.environ.get("DUFFEL_ACCESS_TOKEN")
+                url = f"https://api.duffel.com/air/orders/{order_id}"
+                headers = {
+                    "Duffel-Version": "v1",
+                    "Authorization": f"Bearer {auth_token}",
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Accept-Encoding": "gzip",
+                }
+                response = requests.get(url, headers=headers)
+                response.raise_for_status()
+                response = response.json()["data"]
+                return Response(response)
+            except requests.HTTPError as exc:
+                logging.error(
+                    f"Error response {exc.response.status_code} while requesting {exc.request.url}: {exc.response.text}"
+                )
+                return Response(
+                    {"request_url": exc.request.url, "message": exc.response.text},
+                    status=exc.response.status_code,
+                )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class BookingLinkView(APIView):

@@ -4,7 +4,9 @@ from django.test import TestCase
 
 class CitySearchTest(TestCase):
     def test_searches_for_cities(self):
-        response = self.client.get("/search-cities/?query=Dubl", format="json")
+        response = self.client.get(
+            "/search-cities/?query=Dubl", content_type="application/json"
+        )
         assert response.status_code == HTTPStatus.OK
         assert response.data == [
             {
@@ -32,7 +34,8 @@ class CitySearchTest(TestCase):
 
     def test_searches_for_cities_by_country(self):
         response = self.client.get(
-            "/search-cities/?query=Dubl&country_iata=IE", format="json"
+            "/search-cities/?query=Dubl&country_iata=IE",
+            content_type="application/json",
         )
         assert response.status_code == HTTPStatus.OK
         assert response.data == [
@@ -46,7 +49,9 @@ class CitySearchTest(TestCase):
         ]
 
     def test_removes_duplicate_casablanca(self):
-        response = self.client.get("/search-cities/?query=Casabl", format="json")
+        response = self.client.get(
+            "/search-cities/?query=Casabl", content_type="application/json"
+        )
         assert response.status_code == HTTPStatus.OK
         assert response.data == [
             {

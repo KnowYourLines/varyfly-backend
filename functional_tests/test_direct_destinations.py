@@ -6,7 +6,7 @@ class DirectDestinationsTest(TestCase):
     def test_direct_destinations_only_origin(self):
         response = self.client.get(
             "/direct-destinations/?city_name=London&city_iata=LON&country_iata=GB",
-            format="json",
+            content_type="application/json",
         )
         assert response.status_code == HTTPStatus.OK
         assert len(response.data) == 367
@@ -57,7 +57,7 @@ class DirectDestinationsTest(TestCase):
     def test_no_data_for_missing_params(self):
         response = self.client.get(
             "/direct-destinations/?city_name=London",
-            format="json",
+            content_type="application/json",
         )
         assert response.status_code == HTTPStatus.OK
         assert not response.data
