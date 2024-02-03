@@ -102,9 +102,8 @@ def get_direct_destinations(
                 if city["iataCode"] not in direct_destinations and not irrelevant:
                     direct_destinations[city["iataCode"]] = city
                 elif (
-                    direct_destinations.get(city["iataCode"], {})
-                    .get("metrics", {})
-                    .get("relevance", 0)
+                    city["iataCode"] in direct_destinations
+                    and direct_destinations[city["iataCode"]]["metrics"]["relevance"]
                     < city_relevance
                 ):
                     direct_destinations[city["iataCode"]] = city
