@@ -40,7 +40,7 @@ class WebhooksView(APIView):
                 ]
                 booking_reference = response["booking_reference"]
                 send_mail(
-                    subject=f"Booking {booking_reference}",
+                    subject=f"Flight Booking {booking_reference}",
                     message="hello world",
                     recipient_list=passenger_emails,
                     fail_silently=False,

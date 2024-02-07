@@ -24,7 +24,7 @@ class WebhooksTest(TestCase):
         )
         assert response.status_code == HTTPStatus.OK
         assert len(mail.outbox) == 1
-        assert mail.outbox[0].subject == "Booking WZQ4ET"
+        assert mail.outbox[0].subject == "Flight Booking WZQ4ET"
         assert mail.outbox[0].to == ["johnkcli@hotmail.com"]
         assert mail.outbox[0].from_email == "Varyfly <varyfly.booking@gmail.com>"
 
