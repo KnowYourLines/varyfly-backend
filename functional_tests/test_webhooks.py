@@ -1,8 +1,10 @@
 from http import HTTPStatus
 
 from django.test import TestCase
+from django.test.utils import override_settings
 
 
+@override_settings(EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend")
 class WebhooksTest(TestCase):
     def test_order_created_webhook(self):
         response = self.client.post(

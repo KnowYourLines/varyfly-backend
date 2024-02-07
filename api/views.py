@@ -6,6 +6,7 @@ import uuid
 
 import pycountry
 import requests
+from django.core.mail import send_mail
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -34,6 +35,17 @@ class WebhooksView(APIView):
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
                 response = response.json()["data"]
+                passenger_emails = [
+                    passenger["email"] for passenger in response["passengers"]
+                ]
+                booking_reference = response["booking_reference"]
+                send_mail(
+                    subject=f"Booking {booking_reference}",
+                    message="hello world",
+                    recipient_list=passenger_emails,
+                    fail_silently=False,
+                    from_email=None,
+                )
                 return Response(response)
             except requests.HTTPError as exc:
                 logging.error(
