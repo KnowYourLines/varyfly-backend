@@ -18,7 +18,7 @@ services:
     env: python
     repo: https://github.com/KnowYourLines/varyfly-backend.git
     region: ohio
-    plan: free
+    plan: starter
     branch: main
     buildCommand: "pip install -r requirements.txt; python manage.py makemigrations api; python manage.py migrate; python manage.py createcachetable; python manage.py collectstatic --no-input"
     startCommand: "gunicorn --bind 0.0.0.0:$PORT server.wsgi:application"
