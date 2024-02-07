@@ -44,7 +44,7 @@ class WebhooksView(APIView):
                     message="hello world",
                     recipient_list=passenger_emails,
                     fail_silently=False,
-                    from_email=None,
+                    from_email=f"Varyfly <{os.environ.get('EMAIL_HOST_USER')}>",
                 )
                 return Response(response)
             except requests.HTTPError as exc:

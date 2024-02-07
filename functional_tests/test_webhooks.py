@@ -1,12 +1,13 @@
 from http import HTTPStatus
 
+from django.core import mail
 from django.test import TestCase
 from django.test.utils import override_settings
 
 
-@override_settings(EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend")
+# @override_settings(EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend")
 class WebhooksTest(TestCase):
-    def test_order_created_webhook(self):
+    def test_order_created_webhook_sends_confirmation(self):
         response = self.client.post(
             "/webhooks/",
             data={
@@ -22,6 +23,10 @@ class WebhooksTest(TestCase):
             content_type="application/json",
         )
         assert response.status_code == HTTPStatus.OK
+        assert len(mail.outbox) == 1
+        assert mail.outbox[0].subject == "Booking WZQ4ET"
+        assert mail.outbox[0].to == ["johnkcli@hotmail.com"]
+        assert mail.outbox[0].from_email == "Varyfly <varyfly.booking@gmail.com>"
 
     def test_invalid_order(self):
         response = self.client.post(
