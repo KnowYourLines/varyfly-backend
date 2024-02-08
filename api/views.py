@@ -6,7 +6,9 @@ import uuid
 
 import pycountry
 import requests
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -39,13 +41,18 @@ class WebhooksView(APIView):
                     passenger["email"] for passenger in response["passengers"]
                 ]
                 booking_reference = response["booking_reference"]
-                send_mail(
+                html_message = render_to_string("confirmation_email.html")
+                plain_message = strip_tags(html_message)
+
+                message = EmailMultiAlternatives(
                     subject=f"Flight Booking {booking_reference}",
-                    message="hello world",
-                    recipient_list=passenger_emails,
-                    fail_silently=False,
                     from_email=f"Varyfly <{os.environ.get('EMAIL_HOST_USER')}>",
+                    body=plain_message,
+                    to=passenger_emails,
                 )
+
+                message.attach_alternative(html_message, "text/html")
+                message.send()
                 return Response(response)
             except requests.HTTPError as exc:
                 logging.error(
