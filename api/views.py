@@ -72,6 +72,24 @@ class WebhooksView(APIView):
                             )
                             passenger["given_name"] = passenger_details["given_name"]
                             passenger["family_name"] = passenger_details["family_name"]
+                            passenger["cabin_class"] = passenger[
+                                "cabin_class"
+                            ].capitalize()
+                            if not passenger.get("seat"):
+                                passenger["seat"] = "Not assigned"
+                            else:
+                                passenger["seat"] = passenger["seat"]["designator"]
+                            passenger["baggage"] = next(
+                                luggage["quantity"]
+                                for luggage in passenger["baggages"]
+                                if luggage["type"] == "checked"
+                            )
+                            passenger["carry_on"] = next(
+                                luggage["quantity"]
+                                for luggage in passenger["baggages"]
+                                if luggage["type"] == "carry_on"
+                            )
+
                         segments.append(segment)
                 fare = f"{response['base_amount']} {response['base_currency']}"
                 fees_and_taxes = f"{response['tax_amount']} {response['tax_currency']}"
