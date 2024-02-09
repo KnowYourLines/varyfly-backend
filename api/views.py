@@ -4,9 +4,10 @@ import logging
 import os
 import uuid
 
+import isodate
 import pycountry
 import requests
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
@@ -37,11 +38,73 @@ class WebhooksView(APIView):
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
                 response = response.json()["data"]
+                passengers = response["passengers"]
+                segments = []
+                for trip_slice in response["slices"]:
+                    for segment in trip_slice["segments"]:
+                        segment["departing_at"] = datetime.datetime.strptime(
+                            segment["departing_at"], "%Y-%m-%dT%H:%M:%S"
+                        )
+                        segment["departure_time"] = segment["departing_at"].strftime(
+                            "%H:%Mh"
+                        )
+                        segment["arriving_at"] = datetime.datetime.strptime(
+                            segment["arriving_at"], "%Y-%m-%dT%H:%M:%S"
+                        )
+                        segment["arrival_time"] = segment["arriving_at"].strftime(
+                            "%H:%Mh"
+                        )
+                        duration_total_seconds = isodate.parse_duration(
+                            segment["duration"]
+                        ).total_seconds()
+                        duration_hours = int(duration_total_seconds // 3600)
+                        duration_minutes = int((duration_total_seconds % 3600) // 60)
+                        segment["duration"] = f"{duration_hours}h {duration_minutes}m"
+                        for passenger in segment["passengers"]:
+                            passenger_id = passenger["passenger_id"]
+                            passenger_details = next(
+                                passenger
+                                for passenger in passengers
+                                if passenger["id"] == passenger_id
+                            )
+                            passenger["given_name"] = passenger_details["given_name"]
+                            passenger["family_name"] = passenger_details["family_name"]
+                        segments.append(segment)
+                fare = f"{response['base_amount']} {response['base_currency']}"
+                fees_and_taxes = f"{response['tax_amount']} {response['tax_currency']}"
+                total = f"{response['total_amount']} {response['total_currency']}"
+                change_condition = response["conditions"]["change_before_departure"]
+                if change_condition["allowed"]:
+                    change_condition = (
+                        f"Flight changes allowed at any time up until the initial departure date, with a penalty of "
+                        f"{change_condition['penalty_amount']} {change_condition['penalty_currency']}."
+                    )
+                else:
+                    change_condition = "No flight changes allowed."
+                refund_condition = response["conditions"]["refund_before_departure"]
+                if refund_condition["allowed"]:
+                    refund_condition = (
+                        f"Refunds allowed at any time up until the initial departure date, with a penalty of "
+                        f"{refund_condition['penalty_amount']} {refund_condition['penalty_currency']}."
+                    )
+                else:
+                    refund_condition = "No refunds allowed."
                 passenger_emails = [
                     passenger["email"] for passenger in response["passengers"]
                 ]
                 booking_reference = response["booking_reference"]
-                html_message = render_to_string("confirmation_email.html")
+                context = {
+                    "booking_reference": booking_reference,
+                    "segments": segments,
+                    "refund_condition": refund_condition,
+                    "change_condition": change_condition,
+                    "fare": fare,
+                    "fees_and_taxes": fees_and_taxes,
+                    "total": total,
+                }
+                html_message = render_to_string(
+                    "confirmation_email.html", context=context
+                )
                 plain_message = strip_tags(html_message)
 
                 message = EmailMultiAlternatives(
