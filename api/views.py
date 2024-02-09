@@ -48,6 +48,9 @@ class WebhooksView(APIView):
                         segment["departure_time"] = segment["departing_at"].strftime(
                             "%H:%Mh"
                         )
+                        segment["departure_date"] = segment["departing_at"].strftime(
+                            "%d/%m/%Y"
+                        )
                         segment["arriving_at"] = datetime.datetime.strptime(
                             segment["arriving_at"], "%Y-%m-%dT%H:%M:%S"
                         )

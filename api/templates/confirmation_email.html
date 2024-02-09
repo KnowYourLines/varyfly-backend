@@ -340,7 +340,7 @@
 															<tr>
 																<td class="pad">
 																	<div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:15px;line-height:120%;text-align:center;mso-line-height-alt:18px;">
-																		<p style="margin: 0; word-break: break-word;"><span>Terminal</span></p>
+																		<p style="margin: 0; word-break: break-word;"><span>Flight</span></p>
 																	</div>
 																</td>
 															</tr>
@@ -349,7 +349,7 @@
 															<tr>
 																<td class="pad">
 																	<div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:18px;line-height:120%;text-align:center;mso-line-height-alt:21.599999999999998px;">
-																		<p style="margin: 0; word-break: break-word;"><strong><span>A</span></strong></p>
+																		<p style="margin: 0; word-break: break-word;"><strong><span>{{ segment.marketing_carrier.iata_code }}{{ segment.marketing_carrier_flight_number }}</span></strong></p>
 																	</div>
 																</td>
 															</tr>
@@ -360,7 +360,7 @@
 															<tr>
 																<td class="pad">
 																	<div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:15px;line-height:120%;text-align:center;mso-line-height-alt:18px;">
-																		<p style="margin: 0; word-break: break-word;"><span>Bording Time</span></p>
+																		<p style="margin: 0; word-break: break-word;"><span>Airline</span></p>
 																	</div>
 																</td>
 															</tr>
@@ -369,7 +369,7 @@
 															<tr>
 																<td class="pad">
 																	<div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:18px;line-height:120%;text-align:center;mso-line-height-alt:21.599999999999998px;">
-																		<p style="margin: 0; word-break: break-word;"><strong><span>16:45</span></strong></p>
+																		<p style="margin: 0; word-break: break-word;"><strong><span>{{ segment.operating_carrier.name }}</span></strong></p>
 																	</div>
 																</td>
 															</tr>
@@ -380,7 +380,7 @@
 															<tr>
 																<td class="pad">
 																	<div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:15px;line-height:120%;text-align:center;mso-line-height-alt:18px;">
-																		<p style="margin: 0; word-break: break-word;"><span>Class</span></p>
+																		<p style="margin: 0; word-break: break-word;"><span>Departure Date</span></p>
 																	</div>
 																</td>
 															</tr>
@@ -389,27 +389,7 @@
 															<tr>
 																<td class="pad">
 																	<div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:18px;line-height:120%;text-align:center;mso-line-height-alt:21.599999999999998px;">
-																		<p style="margin: 0; word-break: break-word;"><strong><span>Economy</span></strong></p>
-																	</div>
-																</td>
-															</tr>
-														</table>
-													</td>
-													<td class="column column-4" width="25%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
-														<table class="paragraph_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
-															<tr>
-																<td class="pad">
-																	<div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:15px;line-height:120%;text-align:center;mso-line-height-alt:18px;">
-																		<p style="margin: 0; word-break: break-word;"><span>Seat</span></p>
-																	</div>
-																</td>
-															</tr>
-														</table>
-														<table class="paragraph_block block-2" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
-															<tr>
-																<td class="pad">
-																	<div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:18px;line-height:120%;text-align:center;mso-line-height-alt:21.599999999999998px;">
-																		<p style="margin: 0; word-break: break-word;"><strong><span>17A</span></strong></p>
+																		<p style="margin: 0; word-break: break-word;"><strong><span>{{ segment.departure_date }}</span></strong></p>
 																	</div>
 																</td>
 															</tr>
