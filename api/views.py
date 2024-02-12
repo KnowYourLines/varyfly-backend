@@ -4,7 +4,6 @@ import logging
 import os
 import uuid
 
-import isodate
 import pycountry
 import requests
 from django.core.mail import EmailMultiAlternatives
@@ -18,6 +17,7 @@ from api.helpers import (
     access_token_and_type,
     get_direct_destinations,
     get_trip_segments,
+    search_cities,
 )
 from api.serializers import OrderCreatedSerializer
 
@@ -147,22 +147,7 @@ class CitySearchView(APIView):
             country_iata = request.query_params.get("country_iata")
             city_suggestions = []
             if query:
-                params = {
-                    "subType": "CITY",
-                    "keyword": query,
-                    "sort": "analytics.travelers.score",
-                    "view": "FULL",
-                }
-                if country_iata:
-                    params["countryCode"] = country_iata
-                token_type, access_token = access_token_and_type()
-                response = requests.get(
-                    f"https://{os.environ.get('AMADEUS_BASE_URL')}/v1/reference-data/locations",
-                    params=params,
-                    headers={"Authorization": f"{token_type} {access_token}"},
-                )
-                response.raise_for_status()
-                cities = response.json().get("data", [])
+                cities = search_cities(query, country_iata)
                 invalid_city_iatas = {"CAS"}
                 city_suggestions = [
                     {

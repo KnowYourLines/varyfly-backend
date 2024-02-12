@@ -190,3 +190,58 @@ def get_trip_segments(trip_slices, trip_passengers):
 
             segments.append(segment)
     return segments
+
+
+def search_cities(query, country_iata):
+    params = {
+        "subType": "CITY",
+        "keyword": query,
+        "sort": "analytics.travelers.score",
+        "view": "FULL",
+    }
+    if country_iata:
+        params["countryCode"] = country_iata
+    token_type, access_token = access_token_and_type()
+    response = requests.get(
+        f"https://{os.environ.get('AMADEUS_BASE_URL')}/v1/reference-data/locations",
+        params=params,
+        headers={"Authorization": f"{token_type} {access_token}"},
+    )
+    response.raise_for_status()
+    cities = response.json().get("data", [])
+    if cities:
+        return cities
+    else:
+        response = requests.get(
+            f"https://{os.environ.get('AMADEUS_BASE_URL')}/v1/reference-data/locations/cities",
+            params={"keyword": query},
+            headers={"Authorization": f"{token_type} {access_token}"},
+        )
+        response.raise_for_status()
+        cities = response.json().get("data", [])
+        airport_cities = {}
+        for city in cities:
+            params = {
+                "latitude": city["geoCode"]["latitude"],
+                "longitude": city["geoCode"]["longitude"],
+                "radius": 500,
+                "sort": "distance",
+                "page[limit]": 20,
+                "page[offset]": 0,
+            }
+            response = requests.get(
+                f"https://{os.environ.get('AMADEUS_BASE_URL')}/v1/reference-data/locations/airports",
+                params=params,
+                headers={"Authorization": f"{token_type} {access_token}"},
+            )
+            response.raise_for_status()
+            airports = response.json().get("data", [])
+            for airport in airports:
+                city_iata = airport["address"]["cityCode"]
+                if city_iata not in airport_cities and len(airport_cities) < 10:
+                    airport_cities[city_iata] = {
+                        "iataCode": city_iata,
+                        "name": airport["address"]["cityName"],
+                        "address": airport["address"],
+                    }
+        return [city_details for city_iata, city_details in airport_cities.items()]
