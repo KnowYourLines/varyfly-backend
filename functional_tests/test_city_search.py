@@ -62,3 +62,39 @@ class CitySearchTest(TestCase):
                 "state_code": None,
             },
         ]
+
+    def test_gets_nearest_cities_with_airports_for_cities_without_airports(self):
+        response = self.client.get(
+            "/search-cities/?query=southend", content_type="application/json"
+        )
+        assert response.status_code == HTTPStatus.OK
+        assert response.data == [
+            {
+                "city_iata": "LON",
+                "city_name": "London",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "PAR",
+                "city_name": "Paris",
+                "country_iata": "FR",
+                "country_name": "France",
+                "state_code": None,
+            },
+            {
+                "city_iata": "MAN",
+                "city_name": "Manchester",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "BHX",
+                "city_name": "Birmingham",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+        ]

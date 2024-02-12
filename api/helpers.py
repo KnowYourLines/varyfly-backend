@@ -1,6 +1,8 @@
+import datetime
 import logging
 import os
 
+import isodate
 import requests
 from geopy import distance
 
@@ -140,3 +142,51 @@ def get_direct_destinations(
         logging.error(
             f"Error response {exc.response.status_code} while requesting {exc.request.url}: {exc.response.text}"
         )
+
+
+def get_trip_segments(trip_slices, trip_passengers):
+    segments = []
+    for trip_slice in trip_slices:
+        for segment in trip_slice["segments"]:
+            segment["departing_at"] = datetime.datetime.strptime(
+                segment["departing_at"], "%Y-%m-%dT%H:%M:%S"
+            )
+            segment["departure_time"] = segment["departing_at"].strftime("%H:%Mh")
+            segment["departure_date"] = segment["departing_at"].strftime("%d/%m/%Y")
+            segment["arriving_at"] = datetime.datetime.strptime(
+                segment["arriving_at"], "%Y-%m-%dT%H:%M:%S"
+            )
+            segment["arrival_time"] = segment["arriving_at"].strftime("%H:%Mh")
+            duration_total_seconds = isodate.parse_duration(
+                segment["duration"]
+            ).total_seconds()
+            duration_hours = int(duration_total_seconds // 3600)
+            duration_minutes = int((duration_total_seconds % 3600) // 60)
+            segment["duration"] = f"{duration_hours}h {duration_minutes}m"
+            for passenger in segment["passengers"]:
+                passenger_id = passenger["passenger_id"]
+                passenger_details = next(
+                    passenger
+                    for passenger in trip_passengers
+                    if passenger["id"] == passenger_id
+                )
+                passenger["given_name"] = passenger_details["given_name"]
+                passenger["family_name"] = passenger_details["family_name"]
+                passenger["cabin_class"] = passenger["cabin_class"].capitalize()
+                if not passenger.get("seat"):
+                    passenger["seat"] = "Not assigned"
+                else:
+                    passenger["seat"] = passenger["seat"]["designator"]
+                passenger["baggage"] = next(
+                    luggage["quantity"]
+                    for luggage in passenger["baggages"]
+                    if luggage["type"] == "checked"
+                )
+                passenger["carry_on"] = next(
+                    luggage["quantity"]
+                    for luggage in passenger["baggages"]
+                    if luggage["type"] == "carry_on"
+                )
+
+            segments.append(segment)
+    return segments

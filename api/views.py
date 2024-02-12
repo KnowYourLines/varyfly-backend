@@ -14,7 +14,11 @@ from django.utils.html import strip_tags
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.helpers import access_token_and_type, get_direct_destinations
+from api.helpers import (
+    access_token_and_type,
+    get_direct_destinations,
+    get_trip_segments,
+)
 from api.serializers import OrderCreatedSerializer
 
 
@@ -39,58 +43,7 @@ class WebhooksView(APIView):
                 response.raise_for_status()
                 response = response.json()["data"]
                 passengers = response["passengers"]
-                segments = []
-                for trip_slice in response["slices"]:
-                    for segment in trip_slice["segments"]:
-                        segment["departing_at"] = datetime.datetime.strptime(
-                            segment["departing_at"], "%Y-%m-%dT%H:%M:%S"
-                        )
-                        segment["departure_time"] = segment["departing_at"].strftime(
-                            "%H:%Mh"
-                        )
-                        segment["departure_date"] = segment["departing_at"].strftime(
-                            "%d/%m/%Y"
-                        )
-                        segment["arriving_at"] = datetime.datetime.strptime(
-                            segment["arriving_at"], "%Y-%m-%dT%H:%M:%S"
-                        )
-                        segment["arrival_time"] = segment["arriving_at"].strftime(
-                            "%H:%Mh"
-                        )
-                        duration_total_seconds = isodate.parse_duration(
-                            segment["duration"]
-                        ).total_seconds()
-                        duration_hours = int(duration_total_seconds // 3600)
-                        duration_minutes = int((duration_total_seconds % 3600) // 60)
-                        segment["duration"] = f"{duration_hours}h {duration_minutes}m"
-                        for passenger in segment["passengers"]:
-                            passenger_id = passenger["passenger_id"]
-                            passenger_details = next(
-                                passenger
-                                for passenger in passengers
-                                if passenger["id"] == passenger_id
-                            )
-                            passenger["given_name"] = passenger_details["given_name"]
-                            passenger["family_name"] = passenger_details["family_name"]
-                            passenger["cabin_class"] = passenger[
-                                "cabin_class"
-                            ].capitalize()
-                            if not passenger.get("seat"):
-                                passenger["seat"] = "Not assigned"
-                            else:
-                                passenger["seat"] = passenger["seat"]["designator"]
-                            passenger["baggage"] = next(
-                                luggage["quantity"]
-                                for luggage in passenger["baggages"]
-                                if luggage["type"] == "checked"
-                            )
-                            passenger["carry_on"] = next(
-                                luggage["quantity"]
-                                for luggage in passenger["baggages"]
-                                if luggage["type"] == "carry_on"
-                            )
-
-                        segments.append(segment)
+                segments = get_trip_segments(response["slices"], passengers)
                 fare = f"{response['base_amount']} {response['base_currency']}"
                 fees_and_taxes = f"{response['tax_amount']} {response['tax_currency']}"
                 total = f"{response['total_amount']} {response['total_currency']}"
