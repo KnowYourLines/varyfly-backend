@@ -140,3 +140,82 @@ class CitySearchTest(TestCase):
                 "state_code": None,
             },
         ]
+
+    def test_handles_cities_with_missing_latitude_and_longitude(self):
+        response = self.client.get(
+            "/search-cities/?query=Kingston upon thames",
+            content_type="application/json",
+        )
+        assert response.status_code == HTTPStatus.OK
+        assert response.data == [
+            {
+                "city_iata": "LON",
+                "city_name": "London",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "SOU",
+                "city_name": "Southampton",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "CBG",
+                "city_name": "Cambridge",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "BOH",
+                "city_name": "Bournemouth",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "GLO",
+                "city_name": "Gloucester Cheltenham",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "BHX",
+                "city_name": "Birmingham",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "BRS",
+                "city_name": "Bristol",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "NQT",
+                "city_name": "Nottingham",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "NWI",
+                "city_name": "Norwich",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+            {
+                "city_iata": "CWL",
+                "city_name": "Cardiff",
+                "country_iata": "GB",
+                "country_name": "United Kingdom",
+                "state_code": None,
+            },
+        ]
