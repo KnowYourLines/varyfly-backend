@@ -221,9 +221,13 @@ def search_cities(query, country_iata):
         cities = response.json().get("data", [])
         airport_cities = {}
         for city in cities:
+            latitude = city.get("geoCode", {}).get("latitude")
+            longitude = city.get("geoCode", {}).get("longitude")
+            if not (latitude and longitude):
+                continue
             params = {
-                "latitude": city["geoCode"]["latitude"],
-                "longitude": city["geoCode"]["longitude"],
+                "latitude": latitude,
+                "longitude": longitude,
                 "radius": 500,
                 "sort": "distance",
                 "page[limit]": 20,
